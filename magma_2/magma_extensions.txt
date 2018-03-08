@@ -1,0 +1,197 @@
+H:=PSL(2,8);
+L:=Sym(3);
+print "H =", GroupName(H), ",  L =", GroupName(L);
+E:=ExtensionsOfSolubleGroup(L,H);
+//E:=ExtensionsOfElementaryAbelianGroup(2,2,H);
+print "Number of extensions:", #E;
+for k in [1..#E] do
+   printf "%o: %o, |G|=%o", k, GroupName(E[k]), #(E[k]);
+end for;
+//IdentifyGroup(E[1]);
+
+
+ord:=6;
+for k in [1..NumberOfSmallGroups(ord)] do 
+    printf "(%o,%o): %o\n", ord, k, GroupName(SmallGroup(ord,k));
+end for;
+
+
+------
+
+H:=PSL(2,8);
+L := DihedralGroup(GrpPerm,4);
+print "H =", GroupName(H), ",  L =", GroupName(L);
+E:=ExtensionsOfSolubleGroup(L,H);
+//E:=ExtensionsOfElementaryAbelianGroup(2,3,H);
+print "Number of extensions:", #E;
+for k in [1..#E] do
+   printf "%o: %o, |G|=%o", k, GroupName(E[k]), #(E[k]);
+end for;
+//IdentifyGroup(E[1]);
+
+-----------
+
+H:=PSL(2,13);
+ord:=4; // Порядок O_p'
+print "H =", GroupName(H);
+for k in [1..NumberOfSmallGroups(ord)] do 
+    print "------";
+    L0:=SmallGroup(ord,k);
+    printf "(%o,%o): L = %o\n", ord, k, GroupName(L0);
+    X:=sub<L0|>;	
+    hom:=CosetAction(L0,X);  
+    L:=hom(L0); // нам нужно перестановочное представление группы    
+    E:=ExtensionsOfSolubleGroup(L,H);    
+    print "Number of extensions of H by L:", #E;
+    for k in [1..#E] do
+        printf "%o: %o, |G|=%o\n", k, GroupName(E[k]), #(E[k]);
+        //T:=E[k]; X1:=sub<T|>;hom2:=CosetAction(T,X1); H2:=hom2(T); IsIsomorphic(H2,SL(2,13));
+    end for;    
+end for;
+
+
+-----
+
+С выводом нормальных подгрупп:
+
+H:=PSL(2,11);
+ord:=16; // Порядок O_p'
+
+PrintNormalSubgroup := function(G)
+    NormList:=NormalSubgroups(G);
+    for k in [1..#NormList] do
+        r := NormList[k];
+        //if not r`order eq orderOp then continue; end if;
+        // else:
+        N:=r`subgroup;
+        printf "N=%o, G/N=%o\n", GroupName(N), GroupName(G/N);
+    end for;	
+    return 0;
+end function;
+
+print "H =", GroupName(H);
+for m in [1..NumberOfSmallGroups(ord)] do 
+    print "------";
+    L0:=SmallGroup(ord,m);
+    printf "(%o,%o): L = %o\n", ord, m, GroupName(L0);
+    X:=sub<L0|>;	
+    hom:=CosetAction(L0,X);  
+    L:=hom(L0); // нам нужно перестановочное представление группы    
+    E:=ExtensionsOfSolubleGroup(L,H);    
+    //print "Number of extensions of H by L:", #E;
+    for k in [1..#E] do
+        printf "%o: %o, |G|=%o\n", k, GroupName(E[k]), #(E[k]);
+        //T:=E[k]; X1:=sub<T|>;hom2:=CosetAction(T,X1); H2:=hom2(T); IsIsomorphic(H2,SL(2,13));
+        if k ge 4 then
+            G1:=E[k]; X1:=sub<G1|>;hom2:=CosetAction(G1,X1); 
+            G2:=hom2(G1); 
+            //P:=SylowSubgroup(T,5);
+            //GroupName(P);
+            PrintNormalSubgroup(G2);
+        end if;
+    end for;  
+end for;
+
+
+-----
+Автоматическая проверка, что содержит нормальную подгруппу $SL_2(11)$
+
+H:=PSL(2,11);
+ord:=4; // Порядок O_p'
+checkNorm:=SL(2,11); // для поиска норм. подгруппы
+//load m11; //H:=G;
+//T:=Sz(8); X1:=sub<T|>;hom2:=CosetAction(T,X1); H:=hom2(T); 
+
+print "|H| =", #H, ", |SL| =", #SL;
+
+CheckNormalSubgroup := function(G, K)
+    NormList:=NormalSubgroups(G);
+    ordK := #K;
+    for k in [1..#NormList] do
+        r := NormList[k];
+        if not r`order eq ordK then continue; end if;
+        T:=r`subgroup; X1:=sub<T|>;hom2:=CosetAction(T,X1); 
+        N:=hom2(T); 
+        if not IsIsomorphic(N,K) then continue; end if;
+        return true;
+        // else:
+        //printf "N=%o, G/N=%o\n", GroupName(N), GroupName(G/N);
+    end for;	
+    return false;
+end function;
+
+print "H =", GroupName(H);
+for m in [1..NumberOfSmallGroups(ord)] do 
+    print "------";
+    L0:=SmallGroup(ord,m);
+    printf "(%o,%o): L = %o\n", ord, m, GroupName(L0);
+    X:=sub<L0|>;	
+    hom:=CosetAction(L0,X);  
+    L:=hom(L0); // нам нужно перестановочное представление группы    
+    E:=ExtensionsOfSolubleGroup(L,H);    
+    //print "Number of extensions of H by L:", #E;
+    for k in [1..#E] do
+        //T:=E[k]; X1:=sub<T|>;hom2:=CosetAction(T,X1); H2:=hom2(T); IsIsomorphic(H2,SL(2,13));
+        //printf "%o: %o, |G|=%o   [%o]\n", k, GroupName(E[k]), #(E[k]), r; 
+        G1:=E[k]; X1:=sub<G1|>;hom2:=CosetAction(G1,X1); 
+        G2:=hom2(G1); 
+        //P:=SylowSubgroup(T,5);
+        //GroupName(P);
+        //r := 0;
+        r := CheckNormalSubgroup(G2, checkNorm);
+        printf "%o: %o, |G|=%o, Z(G)=%o, [%o]\n", k, GroupName(G2), #(G2), GroupName(Center(E2)),  r;        
+    end for;  
+end for;
+
+----------
+Вывод центра, коммутанта и проверка нормальной подгруппы.
+
+H:=PSL(3,4);
+ord:=3; // Порядок O_p'
+checkNorm:=SU(3,4); // для поиска норм. подгруппы
+//load m11; //H:=G;
+//T:=Sz(8); X1:=sub<T|>;hom2:=CosetAction(T,X1); H:=hom2(T); 
+
+print "|H| =", #H, ", |N| =", #checkNorm;
+
+CheckNormalSubgroup := function(G, K)
+    NormList:=NormalSubgroups(G);
+    ordK := #K;
+    for k in [1..#NormList] do
+        r := NormList[k];
+        if not r`order eq ordK then continue; end if;
+        T:=r`subgroup; X1:=sub<T|>;hom2:=CosetAction(T,X1); 
+        N:=hom2(T); 
+        if not IsIsomorphic(N,K) then continue; end if;
+        return true;
+        // else:
+        //printf "N=%o, G/N=%o\n", GroupName(N), GroupName(G/N);
+    end for;	
+    return false;
+end function;
+
+print "H =", GroupName(H);
+for m in [1..NumberOfSmallGroups(ord)] do 
+    print "------";
+    L0:=SmallGroup(ord,m);
+    printf "(%o,%o): L = %o\n", ord, m, GroupName(L0);
+    X:=sub<L0|>;	
+    hom:=CosetAction(L0,X);  
+    L:=hom(L0); // нам нужно перестановочное представление группы    
+    E:=ExtensionsOfSolubleGroup(L,H);    
+    //print "Number of extensions of H by L:", #E;
+    for k in [1..#E] do
+        //T:=E[k]; X1:=sub<T|>;hom2:=CosetAction(T,X1); H2:=hom2(T); IsIsomorphic(H2,SL(2,13));
+        //printf "%o: %o, |G|=%o   [%o]\n", k, GroupName(E[k]), #(E[k]), r; 
+        G1:=E[k]; X1:=sub<G1|>;hom2:=CosetAction(G1,X1); 
+        G2:=hom2(G1); 
+        //P:=SylowSubgroup(T,5);
+        //GroupName(P);
+        //r := 0;
+        r := CheckNormalSubgroup(G2, checkNorm);
+        printf "%o: %o, |G|=%o, Z(G)=%o, G'=%o, [%o]\n", k, GroupName(G2), #(G2), GroupName(Center(G2)), GroupName(CommutatorSubgroup(G2,G2)),  r;        
+    end for;  
+end for;
+
+
+

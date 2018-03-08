@@ -1,0 +1,49 @@
+G:=SmallGroup(1512,881);
+GroupName(G);
+print "-----------";
+Nlist:=Subgroups(G);
+for k in [1..#Nlist] do
+    r:=Nlist[k];
+    N:=r`subgroup;
+    print r`order, GroupName(N), IsNormal(G,N);
+    //K:=G/N;
+    //printf "%o         %o\n", GroupName(N), GroupName(K);
+end for;
+
+---------
+
+n:=1512; p:=7;
+T:= SmallGroups(n);
+k:=0;
+for i in [1..#T] do
+G:= T[i];
+P:= SylowSubgroup(G,p);
+if IsSolvable(G) or not IsCyclic(P) then continue;
+else k:=k+1;
+print i, GroupName(G);
+end if;
+end for;
+k;
+
+--------
+
+H:=PSL(2,11); p:=3;
+orderOp := 2;  // порядок Op'
+print "|G| =", #H*orderOp, ", p =", p;
+T:= SmallGroups(#H * orderOp);
+for i in [1..#T] do
+	G:= T[i];
+	if IsSolvable(G) or not IsCyclic(SylowSubgroup(G,p)) then continue; end if;
+        print "---------";
+	print i, GroupName(G);
+	NormList:=NormalSubgroups(G);
+	for k in [1..#NormList] do
+		r := NormList[k];
+		if not r`order eq orderOp then continue; end if;
+		// else:
+		N:=r`subgroup;
+		printf "N=%o, G/N=%o\n", GroupName(N), GroupName(G/N);
+	end for;	
+end for;
+
+

@@ -1,0 +1,13 @@
+// http://magma.maths.usyd.edu.au/calc/
+
+G:= SmallGroup(1320,13);
+CharacterDegrees(G);
+CharacterTable(G);
+
+Z1 := (CyclotomicField(5: Sparse := true)) ! [ RationalField() | -1, 0, -1, -1 ];
+Z2 := (CyclotomicField(11: Sparse := true)) ! [ RationalField() | 0, 1, 0, 1, 1, 1, 0, 0, 0, 1 ];
+Z3 := (CyclotomicField(12: Sparse := true)) ! [ RationalField() | 0, -1, 0, -2 ];
+Z1;
+Z2;
+Z3;
+
